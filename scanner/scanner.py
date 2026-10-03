@@ -20,7 +20,7 @@ CARDANO_ORGS = [
     # Tier 1 - Core Cardano
     "IntersectMBO",
     "input-output-hk",
-    "cardanofoundation",
+    "cardano-foundation",  # listed as "cardanofoundation" before — that org 404s; this is the real slug
     "EMURGO",
     "Blockfrost",
     # Tier 2 - Major DEXs / Infra
@@ -37,7 +37,7 @@ CARDANO_ORGS = [
     # (cardano-node / cardano-wallet used to be listed here, but they are
     # repositories, not orgs — the org endpoint 404s on both, so every scan
     # wasted a call and logged an error. Their issues are already covered
-    # via the IntersectMBO / cardanofoundation org scans.)
+    # via the IntersectMBO / cardano-foundation org scans.)
 ]
 
 DONATION_ADDR = "addr1q8hnl6vl5a6k3rw3n5g3jtte696zcl76kfatzv7gpswa9r0dj7fma6klq55y4ffm7tf0em09udnyhuk4ah92pl5x9jpqjae44v"

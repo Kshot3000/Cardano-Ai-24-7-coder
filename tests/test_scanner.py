@@ -106,9 +106,11 @@ class HonestyTests(unittest.TestCase):
         # MLabsHaskell 404s (real org: mlabs-haskell); cardano-node and
         # cardano-wallet are repositories, not orgs.
         self.assertNotIn("MLabsHaskell", scanner.CARDANO_ORGS)
+        self.assertNotIn("cardanofoundation", scanner.CARDANO_ORGS)
         self.assertNotIn("cardano-node", scanner.CARDANO_ORGS)
         self.assertNotIn("cardano-wallet", scanner.CARDANO_ORGS)
         self.assertIn("mlabs-haskell", scanner.CARDANO_ORGS)
+        self.assertIn("cardano-foundation", scanner.CARDANO_ORGS)
 
     def test_funding_file_uses_no_unknown_platform_key(self):
         with open(os.path.join(ROOT, ".github", "FUNDING.yml")) as f:
