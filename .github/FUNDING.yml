@@ -1,2 +1,8 @@
 # Funding
-cardano: addr1q8hnl6vl5a6k3rw3n5g3jtte696zcl76kfatzv7gpswa9r0dj7fma6klq55y4ffm7tf0em09udnyhuk4ah92pl5x9jpqjae44v
+#
+# GitHub's funding-file schema only accepts its listed platform keys
+# (github, patreon, open_collective, ko_fi, custom, …). There is no
+# `cardano:` key — the previous version of this file used one, which made
+# the whole file invalid so GitHub ignored it. The Cardano donation
+# address therefore lives in README.md ("Donation") and ORGS_PRIORITY.md,
+# where it renders and copies correctly.

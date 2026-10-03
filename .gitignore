@@ -1,0 +1,11 @@
+# Secrets — a real .env was committed once (removed in e587ff6) and must
+# never land again. Copy .env.example instead; never commit the filled file.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
