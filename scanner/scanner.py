@@ -95,7 +95,26 @@ def list_issues(org, repo, label="bug"):
     ]
 
 
+def _positive_int(value):
+    """argparse type for --max-repos: must be a positive integer.
+
+    Without this, --max-repos -1 was accepted and Python slice semantics
+    turned repos[:-1] into "scan all but the last repo" — a silently
+    wrong scan — and --max-repos 0 scanned nothing while the run still
+    reported success.
+    """
+    try:
+        ivalue = int(value)
+    except (TypeError, ValueError):
+        raise argparse.ArgumentTypeError(f"{value!r} is not an integer")
+    if ivalue < 1:
+        raise argparse.ArgumentTypeError(f"--max-repos must be at least 1, got {ivalue}")
+    return ivalue
+
+
 def scan_org(org, label="bug", max_repos=20):
+    if not isinstance(max_repos, int) or max_repos < 1:
+        raise ValueError(f"max_repos must be a positive integer, got {max_repos!r}")
     print(f"Scanning {org}...")
     try:
         repos = list_repos(org)
@@ -132,7 +151,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Scan Cardano GitHub orgs for labelled open issues.")
     parser.add_argument("--org", help="Specific org to scan (default: all known Cardano/Midnight orgs)")
     parser.add_argument("--label", default="bug", help="Issue label to look for (default: bug)")
-    parser.add_argument("--max-repos", type=int, default=20,
+    parser.add_argument("--max-repos", type=_positive_int, default=20,
                         help="How many of each org's top repos to scan (default: 20)")
     args = parser.parse_args(argv)
     orgs = [args.org] if args.org else CARDANO_ORGS

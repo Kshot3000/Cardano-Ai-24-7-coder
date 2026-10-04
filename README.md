@@ -16,9 +16,15 @@ Organizations scanned:
 - And related Cardano projects
 
 ## Tools
-- `scanner/scanner.py` – GitHub API scanner for issues/PRs
-- `tools/` – Auto-generated fixes and utilities
-- `apps/` – New Cardano applications built on demand
+- `scanner/scanner.py` – GitHub API scanner for issues/PRs (the working tool)
+- `tools/auto_fix_template.py` – template for generated fixes; **not implemented yet** — `apply_fix` raises `NotImplementedError` rather than claiming a fix it did not make
+- `apps/example_app.py` – minimal example-app scaffold (prints a startup line only)
+
+## Automation
+The `Cardano AI 24/7 Scan` GitHub Actions workflow runs the scanner every
+6 hours (and on manual dispatch) and uploads the generated `reports/` as a
+run artifact (retained 30 days), so scan output is kept instead of being
+discarded when the job ends.
 
 ## Usage
 ```bash
@@ -27,7 +33,8 @@ python scanner/scanner.py --org IntersectMBO --label bug
 ```
 Without `--org` it scans every org in `scanner/scanner.py`'s `CARDANO_ORGS`
 list (see ORGS_PRIORITY.md for the tiering). `--label` defaults to `bug`;
-`--max-repos` (default 20) caps how many of each org's top repos are scanned.
+`--max-repos` (default 20) caps how many of each org's top repos are scanned;
+it must be a positive integer (0 or negative values are rejected, exit 2).
 The scanner pages through each org's full repo list, ignores pull requests
 when collecting issues, and times out any hung GitHub request after 30s.
 

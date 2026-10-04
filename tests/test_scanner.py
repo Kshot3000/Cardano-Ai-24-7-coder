@@ -79,6 +79,52 @@ class CliTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(scan.call_args.kwargs["label"], "bug")
 
+    def test_max_repos_must_be_positive(self):
+        # --max-repos -1 used to be accepted and repos[:-1] silently
+        # scanned "all but the last repo"; 0 scanned nothing yet the
+        # run reported success. argparse must reject both (exit 2).
+        for bad in ("-1", "0"):
+            with self.assertRaises(SystemExit) as cm:
+                scanner.main(["--org", "IntersectMBO", "--max-repos", bad])
+            self.assertEqual(cm.exception.code, 2)
+
+    def test_scan_org_rejects_non_positive_max_repos(self):
+        for bad in (-1, 0):
+            with self.assertRaises(ValueError):
+                scanner.scan_org("Org", max_repos=bad)
+
+
+class WorkflowTests(unittest.TestCase):
+    def test_scan_workflow_is_valid_and_keeps_reports(self):
+        # The shipped scan.yml used to end with a stray ``` line, so
+        # every Actions run failed YAML parsing in 0s (verified via
+        # `gh run list`: all runs completed/failure, 0s). It also never
+        # persisted reports/ — the scan's output vanished with the job.
+        path = os.path.join(ROOT, ".github", "workflows", "scan.yml")
+        with open(path) as f:
+            text = f.read()
+        self.assertNotIn("```", text)
+        try:
+            import yaml
+        except ImportError:
+            yaml = None
+        if yaml is not None:
+            parsed = yaml.safe_load(text)
+            self.assertIn("jobs", parsed)
+        self.assertIn("upload-artifact", text)
+        self.assertIn("pip install -r requirements.txt", text)
+        self.assertIn("timeout-minutes", text)
+
+
+class AutoFixHonestyTests(unittest.TestCase):
+    def test_apply_fix_never_claims_success_without_work(self):
+        # apply_fix used to print "Applying fix for ..." and return
+        # True while touching nothing. It must refuse loudly instead.
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import auto_fix_template
+        with self.assertRaises(NotImplementedError):
+            auto_fix_template.apply_fix("/nonexistent", {"number": 1})
+
 
 class HonestyTests(unittest.TestCase):
     def test_scaffold_invents_no_repos_or_stars(self):
